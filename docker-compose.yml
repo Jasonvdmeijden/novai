@@ -1,0 +1,42 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    environment:
+      - AGENT_SERVICE_URL=http://agent:8000
+    volumes:
+      - ${VAULT_PATH}:/vault:ro
+      - db-data:/data
+      - C:\Users\Jason\.claude.json:/root/.claude.json:ro
+    depends_on:
+      agent:
+        condition: service_healthy
+
+  agent:
+    build:
+      context: .
+      dockerfile: docker/agent.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - HOME=/root
+      - CLAUDE_HOME=/root
+      - HOST_PROXY_URL=http://host.docker.internal:4000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${VAULT_PATH}:/vault
+      - db-data:/data
+      - C:\Users\Jason\.claude.json:/root/.claude.json:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  db-data:
