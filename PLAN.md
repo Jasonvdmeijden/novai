@@ -178,5 +178,61 @@ novai/
 - [x] `agent-service/routers/internal.py` — NEW: Tool execution callback endpoint
 - [x] `agent-service/main.py` — Registered internal_router
 
+## Phase 10: Dynamic Vault Navigation + Chat Panel — DONE
+- [x] `web/components/layout/VaultTreeSidebar.tsx` — Dynamic vault tree sidebar, replaces ProjectSidebar
+- [x] `web/app/projects/[projectId]/vault/[...vaultPath]/page.tsx` — Unified vault file viewer page
+- [x] `web/components/chat/ChatPanel.tsx` — Collapsible chat panel on right side
+- [x] `web/app/projects/[projectId]/layout.tsx` — Updated to use VaultTreeSidebar + ProjectLayoutClient + ChatPanel
+- [x] `web/app/projects/[projectId]/layout-client.tsx` — NEW: Client wrapper for layout to extract currentPath
+- [x] `web/components/layout/Sidebar.tsx` — Removed section links, now only Files + Settings
+- [x] `web/app/api/chat/route.ts` — Accept currentPath, inject into system prompt
+- [x] `web/app/api/vault/route.ts` — Fixed tree structure response format
+- [x] `agent-service/routers/chat.py` — Accept current_path in ChatRequest, inject into system prompt
+- [x] `web/hooks/useChat.ts` — Accept currentPath option, pass to chat API
+- [x] `web/components/chat/ChatWindow.tsx` — Accept currentPath, pass to useChat hook
+- [x] `web/app/projects/[projectId]/vault/page.tsx` — Root vault page (redirects)
+
+## Phase 11: File Explorer + Chat Panel Improvements — DONE
+- [x] `web/lib/vault.ts` — Add `renameVaultFile`, `moveVaultFile`, `createVaultDirectory`
+- [x] `web/app/api/vault/route.ts` — Add PATCH (rename/move) + POST (newfile/mkdir) handlers
+- [x] `web/hooks/useResize.ts` — NEW: Custom resize drag hook for panels
+- [x] `web/components/layout/VaultTreeSidebar.tsx` — REWRITE: Context menu, inline rename, dialogs for new file/folder/move/delete, auto-poll every 5s, manual refresh button, resizable width (224px default, 160-400 range)
+- [x] `web/components/vault/VaultFileView.tsx` — Add auto-polling every 5s when not editing
+- [x] `web/components/chat/ChatInput.tsx` — REWRITE: Unified composer with context chips, auto-grow textarea, integrated ContextSelector button in toolbar
+- [x] `web/components/chat/ChatWindow.tsx` — Auto-inject currentPath as pre-populated context chip, move contextFiles to useState
+- [x] `web/components/chat/ChatPanel.tsx` — Fix icon positioning to top of collapsed strip, add resizable width (320px default, 240-600 range)
+- [x] `web/components/chat/ContextSelector.tsx` — Support children prop for custom trigger button, return VaultFile[] format
+
+### Phase 12: UX Polish + Chat Modes + AI Change Preview — DONE
+- [x] Fix file detail view scrolling (add `flex flex-col` to main)
+- [x] Quick-create buttons in sidebar header (FilePlus + FolderPlus)
+- [x] Refresh button on file detail view (RefreshCw icon)
+- [x] Chat mode selector component (ChatModeSelector.tsx)
+- [x] Chat mode support in ChatInput, ChatWindow, useChat hook
+- [x] Mode flavor instructions in system prompt (review, editor, creative, structure, continuity, world builder)
+- [x] Smart vault placement (inject vault tree into system prompt)
+- [x] AI change preview workflow (Plan Changes → READY_TO_APPLY → Apply Changes)
+- [x] planMode flag and planning instructions in chat API
+
+## Post-Phase 12 Bug Fixes & UX Enhancements — DONE
+- [x] Fix delete button in file explorer modal (added loading state + error handling)
+- [x] Fix context menu positioning (doesn't get cut off at viewport edges)
+- [x] Add dark mode toggle (next-themes integration + ThemeToggle component)
+- [x] Fun loading indicators in chat input while AI is busy
+- [x] Context menu now uses smart positioning (viewport-aware)
+
+## Phase 13: Academia Theme Overhaul — DONE
+- [x] `web/app/globals.css` — Light Academia + Dark Academia color palettes, texture/scrollbar/selection styles, font-family declarations
+- [x] `web/app/layout.tsx` — Import Playfair Display + Lora Google Fonts, apply variables to body
+- [x] `web/tailwind.config.ts` — Register font-display and font-serif custom font families
+- [x] `web/components/layout/ThemeToggle.tsx` — Swap icons: BookOpen (dark→light) / Moon (light→dark)
+
+## Phase 14: Icon/Image Theming + Sidebar Theme Toggle — DONE
+- [x] `web/components/layout/ThemeToggle.tsx` — Add `variant="sidebar"` prop, stacked icon+label rendering
+- [x] `web/components/layout/Sidebar.tsx` — Logo redesign (BookOpen icon), mt-auto spacer, decorative deco div, ThemeToggle at bottom, left-border bookmark active state
+- [x] `web/components/layout/VaultTreeSidebar.tsx` — Line 127: Change folder icon from `text-blue-500` to `text-primary`
+- [x] `web/app/globals.css` — Add `.sidebar-deco` styles with quill SVG background
+- [x] `web/app/dashboard/page.tsx` — Remove ThemeToggle from header actions
+
 ## Resume Instructions
 When resuming work, say: "Continue implementing NovAI from PLAN.md" — then read this file and pick up from the first unchecked item.

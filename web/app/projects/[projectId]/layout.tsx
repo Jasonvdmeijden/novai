@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { ProjectSidebar } from "@/components/layout/ProjectSidebar";
+import { VaultTreeSidebar } from "@/components/layout/VaultTreeSidebar";
+import { ProjectLayoutClient } from "./layout-client";
 import type { Project } from "@/types";
 
 export default async function ProjectLayout({
@@ -22,8 +23,10 @@ export default async function ProjectLayout({
   return (
     <div className="flex h-screen bg-background">
       <Sidebar projectId={project.id} />
-      <ProjectSidebar projectId={project.id} projectName={project.name} />
-      <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
+      <VaultTreeSidebar projectId={project.id} />
+      <ProjectLayoutClient projectId={project.id}>
+        {children}
+      </ProjectLayoutClient>
     </div>
   );
 }

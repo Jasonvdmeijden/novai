@@ -15,9 +15,11 @@ interface ContextFile {
 }
 
 interface ContextSelectorProps {
-  projectId: string;
-  onSelect: (files: ContextFile[]) => void;
+  projectId?: string;
+  onSelect: (files: VaultFile[] | ContextFile[]) => void;
   selectedPaths?: string[];
+  disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 interface FileTreeNodeProps {
@@ -110,7 +112,7 @@ function FileTreeNode({
   );
 }
 
-export function ContextSelector({ projectId, onSelect, selectedPaths = [] }: ContextSelectorProps) {
+export function ContextSelector({ projectId = "", onSelect, selectedPaths = [], disabled = false, children }: ContextSelectorProps) {
   const [vaultFiles, setVaultFiles] = useState<VaultFile | null>(null);
   const [selectedSet, setSelectedSet] = useState<Set<string>>(new Set(selectedPaths));
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
@@ -183,7 +185,7 @@ export function ContextSelector({ projectId, onSelect, selectedPaths = [] }: Con
   }, []);
 
   const handleConfirm = useCallback(async () => {
-    const files: ContextFile[] = [];
+    const files: (ContextFile | VaultFile)[] = [];
 
     for (const path of Array.from(selectedSet)) {
       try {
@@ -191,25 +193,31 @@ export function ContextSelector({ projectId, onSelect, selectedPaths = [] }: Con
         const res = await fetch(`/api/vault?${params}`);
         if (res.ok) {
           const data = await res.json();
-          if (data.body) {
-            files.push({ path, body: data.body });
-          }
+          // Return as VaultFile if possible, otherwise as ContextFile
+          files.push({
+            path,
+            name: path.split("/").pop() || path,
+            type: "file",
+            body: data.body,
+          });
         }
       } catch (err) {
         console.error(`Failed to load ${path}:`, err);
       }
     }
 
-    onSelect(files);
+    onSelect(files as VaultFile[]);
     setIsOpen(false);
   }, [selectedSet, projectId, onSelect]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Add Context
-        </Button>
+      <DialogTrigger asChild disabled={disabled}>
+        {children || (
+          <Button variant="outline" size="sm">
+            Add Context
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>

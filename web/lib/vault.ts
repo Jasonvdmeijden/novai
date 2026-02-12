@@ -100,3 +100,34 @@ export function getVaultStats(subpath: string = ""): { files: number; words: num
   walk(subpath);
   return { files, words };
 }
+
+export function renameVaultFile(oldPath: string, newPath: string): void {
+  const oldFullPath = getVaultPath(oldPath);
+  const newFullPath = getVaultPath(newPath);
+  if (!fs.existsSync(oldFullPath)) {
+    throw new Error("File not found");
+  }
+  fs.renameSync(oldFullPath, newFullPath);
+}
+
+export function moveVaultFile(srcPath: string, destDir: string): void {
+  const srcFullPath = getVaultPath(srcPath);
+  const destDirFullPath = getVaultPath(destDir);
+  if (!fs.existsSync(srcFullPath)) {
+    throw new Error("Source file not found");
+  }
+  if (!fs.existsSync(destDirFullPath) || !fs.statSync(destDirFullPath).isDirectory()) {
+    throw new Error("Destination directory not found");
+  }
+  const filename = path.basename(srcFullPath);
+  const destPath = path.join(destDirFullPath, filename);
+  fs.renameSync(srcFullPath, destPath);
+}
+
+export function createVaultDirectory(dirPath: string): void {
+  const fullPath = getVaultPath(dirPath);
+  if (fs.existsSync(fullPath)) {
+    throw new Error("Directory already exists");
+  }
+  fs.mkdirSync(fullPath, { recursive: true });
+}

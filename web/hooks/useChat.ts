@@ -5,6 +5,7 @@ import type { ChatMessage } from "@/types";
 
 interface UseChatOptions {
   projectId: string;
+  currentPath?: string;
 }
 
 interface PermissionEvent {
@@ -20,12 +21,17 @@ interface UseChatReturn {
   isStreaming: boolean;
   streamingContent: string;
   permissions: PermissionEvent[];
-  sendMessage: (message: string, contextFiles?: Array<{ path: string; body: string }>) => Promise<void>;
+  sendMessage: (
+    message: string,
+    contextFiles?: Array<{ path: string; body: string }>,
+    mode?: string,
+    planMode?: boolean
+  ) => Promise<void>;
   loadHistory: () => Promise<void>;
   clearHistory: () => Promise<void>;
 }
 
-export function useChat({ projectId }: UseChatOptions): UseChatReturn {
+export function useChat({ projectId, currentPath }: UseChatOptions): UseChatReturn {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
@@ -46,7 +52,12 @@ export function useChat({ projectId }: UseChatOptions): UseChatReturn {
   }, [projectId]);
 
   const sendMessage = useCallback(
-    async (message: string, contextFiles: Array<{ path: string; body: string }> = []) => {
+    async (
+      message: string,
+      contextFiles: Array<{ path: string; body: string }> = [],
+      mode: string = "chat",
+      planMode: boolean = false
+    ) => {
       // Add optimistic user message
       const userMsg: ChatMessage = {
         id: crypto.randomUUID(),
@@ -66,7 +77,7 @@ export function useChat({ projectId }: UseChatOptions): UseChatReturn {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ projectId, message, contextFiles }),
+          body: JSON.stringify({ projectId, message, contextFiles, currentPath, mode, planMode }),
           signal: abortRef.current.signal,
         });
 
@@ -128,7 +139,7 @@ export function useChat({ projectId }: UseChatOptions): UseChatReturn {
         abortRef.current = null;
       }
     },
-    [projectId]
+    [projectId, currentPath]
   );
 
   return { messages, isStreaming, streamingContent, permissions, sendMessage, loadHistory, clearHistory };

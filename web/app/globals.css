@@ -4,48 +4,49 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71% 4%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 9% 46%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 220 14% 96%;
-    --accent-foreground: 224 71% 4%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 83% 58%;
-    --radius: 0.5rem;
+    --background: 42 35% 93%;
+    --foreground: 22 18% 14%;
+    --card: 40 30% 97%;
+    --card-foreground: 22 18% 14%;
+    --popover: 40 30% 97%;
+    --popover-foreground: 22 18% 14%;
+    --primary: 34 60% 42%;
+    --primary-foreground: 40 30% 97%;
+    --secondary: 38 22% 86%;
+    --secondary-foreground: 22 14% 32%;
+    --muted: 38 22% 86%;
+    --muted-foreground: 22 10% 48%;
+    --accent: 38 28% 80%;
+    --accent-foreground: 22 18% 14%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 40 30% 97%;
+    --border: 34 18% 78%;
+    --input: 34 18% 78%;
+    --ring: 34 60% 42%;
+    --radius: 0.25rem;
   }
 
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 20% 98%;
-    --card: 224 71% 4%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 263 70% 50%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 28% 17%;
-    --muted-foreground: 218 11% 65%;
-    --accent: 215 28% 17%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 263 70% 50%;
+    --background: 24 14% 8%;
+    --foreground: 40 28% 84%;
+    --card: 24 14% 11%;
+    --card-foreground: 40 28% 84%;
+    --popover: 24 14% 11%;
+    --popover-foreground: 40 28% 84%;
+    --primary: 35 55% 52%;
+    --primary-foreground: 24 14% 8%;
+    --secondary: 24 12% 17%;
+    --secondary-foreground: 40 22% 68%;
+    --muted: 24 12% 17%;
+    --muted-foreground: 36 10% 52%;
+    --accent: 24 14% 20%;
+    --accent-foreground: 40 28% 84%;
+    --destructive: 0 62% 38%;
+    --destructive-foreground: 40 28% 84%;
+    --border: 24 12% 20%;
+    --input: 24 12% 20%;
+    --ring: 35 55% 52%;
+    --radius: 0.25rem;
   }
 }
 
@@ -55,5 +56,58 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, hsl(var(--accent) / 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, hsl(var(--primary) / 0.08) 0%, transparent 50%);
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display, Georgia, serif);
+    font-weight: 700;
+  }
+
+  .prose {
+    font-family: var(--font-serif, Georgia, serif);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Text selection */
+::selection {
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--foreground));
+}
+
+/* Sidebar decorative quill/feather */
+.sidebar-deco::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto 4px;
+  opacity: 0.35;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 20c0-1.5.5-3 1.5-4.5L18 4c.5-.5 1-1 1.5-1s1 .5 1.5 1l-1.5 1.5c-.5.5-1 1-1.5 1.5l-9 9c-1 1-2 2-2.5 3.5H6zm14-16c.5 0 1 .2 1.5.7.3.3.5.8.5 1.3 0 .5-.2 1-.5 1.3l-11 11c-1 1-2.2 2-3.5 2.5'/%3E%3C/svg%3E") center/contain no-repeat;
+  color: currentColor;
+}
+
+.dark .sidebar-deco::before {
+  opacity: 0.45;
 }

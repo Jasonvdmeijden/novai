@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
-import { Edit2, Eye, Save, X } from "lucide-react";
+import { Edit2, Eye, Save, X, RefreshCw } from "lucide-react";
 
 interface VaultFileViewProps {
   projectId: string;
@@ -39,7 +39,31 @@ export function VaultFileView({
     setLoading(false);
   }, [projectId, defaultPath]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  // Auto-poll every 5s when not editing
+  useEffect(() => {
+    if (editing) return;
+    const interval = setInterval(() => {
+      const params = new URLSearchParams({ action: "read", path: defaultPath });
+      fetch(`/api/vault?${params}`)
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          }
+          return null;
+        })
+        .then((data) => {
+          if (data) {
+            setBody(data.body ?? data.content ?? "");
+          }
+        })
+        .catch((err) => console.error("Auto-poll failed:", err));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [defaultPath, editing]);
 
   async function save() {
     setSaving(true);
@@ -78,13 +102,18 @@ export function VaultFileView({
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded-lg border bg-background">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b px-4 py-2">
-        <span className="text-xs text-muted-foreground font-mono">{defaultPath}</span>
+      <div className="flex items-center justify-end border-b px-4 py-2">
         {editable && !editing && (
-          <Button variant="ghost" size="sm" onClick={startEdit}>
-            <Edit2 className="mr-1.5 h-3.5 w-3.5" />
-            Edit
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={load} disabled={loading}>
+              <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Button variant="ghost" size="sm" onClick={startEdit}>
+              <Edit2 className="mr-1.5 h-3.5 w-3.5" />
+              Edit
+            </Button>
+          </div>
         )}
         {editing && (
           <div className="flex gap-2">

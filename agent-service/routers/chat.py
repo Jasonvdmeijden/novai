@@ -71,6 +71,7 @@ class ChatRequest(BaseModel):
     system: str | None = None
     history: list[dict] | None = None
     vault_path: str | None = None
+    current_path: str | None = None
 
 
 async def _chat_generator(
@@ -78,11 +79,17 @@ async def _chat_generator(
     system: str | None,
     history: list[dict] | None,
     vault_path: str | None = None,
+    current_path: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Stream chat response via host-proxy SSE."""
     try:
         # Enhance system prompt with vault context and file-writing instructions
         enhanced_system = system or "You are a helpful writing assistant."
+
+        # Add current path context if available
+        if current_path:
+            enhanced_system = f"{enhanced_system}\n\n[USER IS CURRENTLY VIEWING: {current_path}]"
+
         vault_context = _read_vault_context(vault_path or "/vault")
         if vault_context:
             enhanced_system = f"{enhanced_system}\n\n[PROJECT CONTEXT FROM VAULT]\n{vault_context}"
@@ -160,7 +167,7 @@ async def chat(req: ChatRequest) -> StreamingResponse:
     dict with type: 'text', 'done', or 'error'.
     """
     return StreamingResponse(
-        _chat_generator(req.message, req.system, req.history, req.vault_path),
+        _chat_generator(req.message, req.system, req.history, req.vault_path, req.current_path),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

@@ -77,7 +77,8 @@ export default function DashboardPage() {
           title="Dashboard"
           subtitle="Your writing projects"
           actions={
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm">
                   <Plus className="mr-2 h-4 w-4" />
@@ -124,6 +125,7 @@ export default function DashboardPage() {
                 </div>
               </DialogContent>
             </Dialog>
+            </>
           }
         />
 
